@@ -1,4 +1,5 @@
 # Source code: https://spatialglue-tutorials.readthedocs.io/en/latest/Tutorial%202_data%20integration%20for%20mouse%20thymus%20Stereo-CITE-seq.html
+# salloc --time=8:00:00 --account=def-amadou --mem=500G  --cpus-per-task=30 
 import os
 import torch
 import pandas as pd
@@ -89,6 +90,20 @@ plt.tight_layout(w_pad=0.3)
 plt.savefig("sRNA_vs_protein.png", dpi=300, bbox_inches="tight")
 plt.savefig("sRNA_vs_protein.tiff", dpi=3000, bbox_inches="tight")
 plt.show()
+
+# Create a single figure
+fig, ax = plt.subplots(figsize=(7, 5))
+
+# Plot UMAP
+sc.pl.umap(adata, color='SpatialGlue', ax=ax, title='UMAP of SpatialGlue', s=20, show=False)
+
+# Save the figure
+plt.savefig("umap_plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("umap_plot.tiff", dpi=3000, bbox_inches="tight")
+
+plt.show()
+
+print(" Analysis Done")
 
 
 
