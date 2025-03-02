@@ -159,6 +159,7 @@ ax_list[0].get_legend().remove()
 
 plt.tight_layout(w_pad=0.3)
 plt.savefig("With_Annotation_sRNA_vs_protein_v2.png", dpi=300, bbox_inches="tight")
+plt.savefig("With_Annotation_sRNA_vs_protein_v2.tiff", dpi=3000, bbox_inches="tight")
 plt.show()
 
 
