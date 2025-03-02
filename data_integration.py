@@ -21,6 +21,8 @@ device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
 
 # the location of R, which is required for the 'mclust' clustering algorithm. 
 os.environ['R_HOME'] = '/cvmfs/soft.computecanada.ca/easybuild/software/2020/avx512/Core/r/4.3.1/lib64/R'
+
+
 # Specify data type
 data_type = 'Stereo-CITE-seq'
 # Fix random seed
