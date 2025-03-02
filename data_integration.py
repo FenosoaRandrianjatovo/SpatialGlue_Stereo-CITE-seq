@@ -10,6 +10,8 @@ from SpatialGlue.preprocess import clr_normalize_each_cell, pca
 
 
 file_fold =   "/home/fenosoa/scratch/mouse_thymus_Stereo-CITE-seq/Mouse_Thymus/"
+os.chdir("/home/fenosoa/scratch/mouse_thymus_Stereo-CITE-seq/")
+
 
 adata_omics1 = sc.read_h5ad(file_fold + 'adata_RNA.h5ad')
 adata_omics2 = sc.read_h5ad(file_fold + 'adata_ADT.h5ad')
@@ -103,9 +105,61 @@ plt.savefig("umap_plot.tiff", dpi=3000, bbox_inches="tight")
 
 plt.show()
 
-print(" Analysis Done")
+print(" Analysis Done without Annotation, now woth Annotation")
 
 
+
+# plotting with annotation
+fig, ax_list = plt.subplots(1, 2, figsize=(9.5, 3))
+sc.pp.neighbors(adata, use_rep='SpatialGlue', n_neighbors=30)
+sc.tl.umap(adata)
+
+sc.pl.umap(adata, color='SpatialGlue', ax=ax_list[0], title='SpatialGlue', s=10, show=False)
+sc.pl.embedding(adata, basis='spatial', color='SpatialGlue', ax=ax_list[1], title='SpatialGlue', s=20, show=False)
+
+ax_list[0].get_legend().remove()
+
+plt.tight_layout(w_pad=0.3)
+plt.savefig("With_Annotation_sRNA_vs_protein.png", dpi=300, bbox_inches="tight")
+plt.savefig("With_Annotation_sRNA_vs_protein.tiff", dpi=3000, bbox_inches="tight")
+plt.show()
+
+# Exchange attention weights corresponding to annotations
+list_SpatialGlue = [5,4,8,3,1,6,2,7]
+adata.obs['SpatialGlue_number']  = pd.Categorical(adata.obs['SpatialGlue_number'],
+                      categories=list_SpatialGlue,
+                      ordered=True)
+adata.obs['SpatialGlue_number'].cat.rename_categories({5:1,
+                                                       4:2,
+                                                       8:3,
+                                                       3:4,
+                                                       1:5,
+                                                       6:6,
+                                                       2:7,
+                                                       7:8
+                                                }, inplace=True)
+# plotting modality weight values.
+import pandas as pd
+import seaborn as sns
+plt.rcParams['figure.figsize'] = (5,3)
+df = pd.DataFrame(columns=['RNA', 'protein', 'label'])
+df['RNA'], df['protein'] = adata.obsm['alpha'][:, 0], adata.obsm['alpha'][:, 1]
+# df['label'] = adata.obs['SpatialGlue_number'].values
+df['label'] = adata.obs['SpatialGlue'].values
+
+
+df = df.set_index('label').stack().reset_index()
+df.columns = ['label_SpatialGlue', 'Modality', 'Weight value']
+ax = sns.violinplot(data=df, x='label_SpatialGlue', y='Weight value', hue="Modality",
+                split=True, inner="quart", linewidth=1)
+ax.set_title('RNA vs protein')
+ax.set_xlabel('SpatialGlue label')
+ax.legend(bbox_to_anchor=(1.4, 1.01), loc='upper right')
+
+plt.tight_layout(w_pad=0.05)
+ax.savefig("plotting_modality_weight_values.png", dpi=300, bbox_inches="tight")
+ax.savefig("plotting_modality_weight_values.tiff", dpi=3000, bbox_inches="tight")
+#plt.show()
 
 
 
