@@ -124,6 +124,45 @@ plt.savefig("With_Annotation_sRNA_vs_protein.png", dpi=300, bbox_inches="tight")
 plt.savefig("With_Annotation_sRNA_vs_protein.tiff", dpi=3000, bbox_inches="tight")
 plt.show()
 
+# annotation
+adata.obs['SpatialGlue_number'] = adata.obs['SpatialGlue'].copy()
+adata.obs['SpatialGlue'].cat.rename_categories({1: '5-Outer cortex region 3(DN T,DP T,cTEC)',
+                                                2: '7-Subcapsular zone(DN T)',
+                                                3: '4-Middle cortex region 2(DN T,DP T,cTEC)',
+                                                4: '2-Corticomedullary Junction(CMJ)',
+                                                5: '1-Medulla(SP T,mTEC,DC)',
+                                                6: '6-Connective tissue capsule(fibroblast)',
+                                                7: '8-Connective tissue capsule(fibroblast,RBC,myeloid)',
+                                                8: '3-Inner cortex region 1(DN T,DP T,cTEC)'
+                                                }, inplace=True)
+
+
+
+
+list_ = ['3-Inner cortex region 1(DN T,DP T,cTEC)','2-Corticomedullary Junction(CMJ)','4-Middle cortex region 2(DN T,DP T,cTEC)',
+         '7-Subcapsular zone(DN T)', '5-Outer cortex region 3(DN T,DP T,cTEC)', '8-Connective tissue capsule(fibroblast,RBC,myeloid)',
+         '1-Medulla(SP T,mTEC,DC)','6-Connective tissue capsule(fibroblast)']
+adata.obs['SpatialGlue']  = pd.Categorical(adata.obs['SpatialGlue'],
+                      categories=list_,
+                      ordered=True)
+
+
+# plotting with annotation
+fig, ax_list = plt.subplots(1, 2, figsize=(9.5, 3))
+sc.pp.neighbors(adata, use_rep='SpatialGlue', n_neighbors=30)
+sc.tl.umap(adata)
+
+sc.pl.umap(adata, color='SpatialGlue', ax=ax_list[0], title='SpatialGlue', s=10, show=False)
+sc.pl.embedding(adata, basis='spatial', color='SpatialGlue', ax=ax_list[1], title='SpatialGlue', s=20, show=False)
+
+ax_list[0].get_legend().remove()
+
+plt.tight_layout(w_pad=0.3)
+plt.savefig("With_Annotation_sRNA_vs_protein_v2.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+
+
 # # Exchange attention weights corresponding to annotations
 # list_SpatialGlue = [5,4,8,3,1,6,2,7]
 # adata.obs['SpatialGlue_number']  = pd.Categorical(adata.obs['SpatialGlue_number'],
@@ -159,7 +198,7 @@ plt.show()
 # plt.tight_layout(w_pad=0.05)
 # ax.savefig("plotting_modality_weight_values.png", dpi=300, bbox_inches="tight")
 # ax.savefig("plotting_modality_weight_values.tiff", dpi=3000, bbox_inches="tight")
-#plt.show()
+# plt.show()
 
 
 
